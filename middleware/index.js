@@ -37,8 +37,8 @@ const authorize = async (req, res, next) => {
         return next()
     }
 
-    const User = await Event.findOne({ eventcode: eventcode, title: eventname})
-    if (!User) {
+    const user = await Event.findOne({ eventcode: eventcode, title: eventname})
+    if (!user) {
         req.response = { 
             statusCode: 404,
             statusMessage: "Not Found",
@@ -64,7 +64,6 @@ const authorize = async (req, res, next) => {
     }
     return next()
 }
-
 
 const ActiveUser = (req, res, next) => {
     const SessionId = req.cookies.Token

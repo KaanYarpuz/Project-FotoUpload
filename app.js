@@ -6,7 +6,6 @@ const logger = require('morgan');
 
 const indexRouter = require('./routes/index');
 const apiRouter = require('./routes/api');
-const uploadRoute = require('./routes/foto');
 
 const app = express();
 
@@ -24,7 +23,6 @@ app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
 app.use('/', indexRouter);
 app.use('/api', apiRouter);
-app.use('/foto', uploadRoute);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

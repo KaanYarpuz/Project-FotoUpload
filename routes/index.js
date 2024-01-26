@@ -10,4 +10,8 @@ router.get('/login', function (req, res, next) {
   res.render('login');
 });
 
+router.get('/foto', (req, res) => {
+  res.render('foto');
+});
+
 module.exports = router;
