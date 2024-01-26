@@ -4,15 +4,19 @@
  * Module dependencies.
  */
 
+require('dotenv').config()
 var app = require('../app');
+const { connect } = require("mongoose");
 var debug = require('debug')('project-fotoupload:server');
 var http = require('http');
+
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+connect(process.env.DataBaseUrl).then(() => console.log(`connected to the database`))
+var port = normalizePort(process.env.PORT || '4000');
 app.set('port', port);
 
 /**
@@ -20,6 +24,7 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+
 
 /**
  * Listen on provided port, on all network interfaces.
