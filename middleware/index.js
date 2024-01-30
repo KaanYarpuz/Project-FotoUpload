@@ -1,76 +1,102 @@
 
-const Users = new Map();
-const ActiveUsers = new Map();
+const { Event, User } = require('./mongo/index.js')
+const { Users, ActiveUsers } = require('./sessions/index.js')
+const { validateRequest, UseAdmin, setResponse, SetSession, UseSession } = require('./auth/index.js')
 
-const Event = require('../modals/events.js')
-const User  = require("../modals/users.js")
-
-const authorize = async (req, res, next) => {
+const useAuth = async (req, res, next) => {
 
     const request = req.body
-    if (Object.keys(request).length === 0) {
-        req.response = { 
-            statusCode: 400,
-            statusMessage: "Bad Request",
-            message: "The request could not be understood by the server due to malformed syntax."
-        }
+    const { username, eventcode, eventid, password } = request
+    const isValidRequest = await validateRequest(request);
+    
+    if (!isValidRequest) {
+        setResponse(req, 400, "Bad Request", "The request could not be understood by the server due to malformed syntax.")
+        return next();
+    }
+
+    if (ActiveUsers.get(username)) {
+        setResponse(req, 409, "Conflict", "The request could not be accepted by the server due to conflict.")
         return next()
     }
     
-    const { username, eventcode, eventname } = request
-    if(!username && !eventcode && !eventname){
-        req.response = { 
-            statusCode: 400,
-            statusMessage: "Bad Request",
-            message: "The request could not be understood by the server due to malformed syntax."
+    if (!password) {
+        const user = await Event.findOne({ eventcode: eventcode, _id: eventid }).catch(err => {
+            setResponse(req, 500, "Internal Server Error", "The server encountered an unexpected condition which prevented it from fulfilling the request.")
+            return next()
+        })
+
+        if (!user) {
+            setResponse(req, 404, "Not Found", "The server has not found anything matching the Request-URI.")
+            return next()
         }
+
+        req.sessionId = await SetSession(request)
+        setResponse(req, 200, "OK", "The request has succeeded.", {
+            username,
+            eventname: user.title,
+            eventid,
+            admin: false
+        })
+        return next()
+    } 
+
+    const ValidAdmin = await UseAdmin(username, password)
+    if (!ValidAdmin) {
+        setResponse(req, 401, "Unauthorized", "The request has not been authorized because it lacks valid authentication credentials.")
         return next()
     }
 
-    const Active = ActiveUsers.get(username)
-    if (Active) { 
-            req.response = { 
-            statusCode: 409,
-            statusMessage: "Conflict",
-            message: "The request could not be accepted by the server due to conflict."
-        }
-        return next()
-    }
-
-    const user = await Event.findOne({ eventcode: eventcode, title: eventname})
-    if (!user) {
-        req.response = { 
-            statusCode: 404,
-            statusMessage: "Not Found",
-            message: "The server has not found anything matching the Request-URI."
-        }
-        return next()
-    }
-
-    const SessionId = crypto.randomUUID()
-    Users.set(SessionId, { user: req.body })
-    ActiveUsers.set(req.body.username, SessionId)
-
-    req.sessionId = SessionId;
-    req.response = { 
-        statusCode: 200, 
-        statusMessage: "OK",
-        message: "The request has succeeded.",
-        data: {
-            username: username,
-            eventname: eventname
-        }
-        
-    }
+    req.sessionId = await SetSession(request)
+    setResponse(req, 200, "OK", "The request has succeeded.", {
+        username,
+        admin: true
+    })
     return next()
 }
 
-const ActiveUser = (req, res, next) => {
-    const SessionId = req.cookies.Token
-    const User = Users.get(SessionId)
+
+const fetchEvent = async (req, res, next) => {
+    const eventid = req.params.id
+    const event = await Event.findById(eventid).catch((err) => {
+        setResponse(req, 500, "Internal Server Error", "The server encountered an unexpected condition which prevented it from fulfilling the request.")
+        return next()
+    })
+
+    if (!event) {
+        setResponse(req, 404, "Not Found", "The server has not found anything matching the Request-URI.")
+        return next()
+    }
+
+    setResponse(req, 200, "OK", "The request has succeeded.", event)
+    return next()
+}
+
+
+const fetchUser = async (req, res, next) => {
+    const User = await UseSession(req)
+
+    if (!User) {
+        setResponse(req, 401, "Unauthorized", "The request has not been authorized because it lacks valid authentication credentials.")
+        return next()
+    }
+
+    setResponse(req, 200, "OK", "The request has succeeded.", User)
+
     next()
 }
 
+const useUser = async (req, res, next) => {
+
+    const User = await UseSession(req)
+    if (!User) {
+        setResponse(req, 401, "Unauthorized", "The request has not been authorized because it lacks valid authentication credentials.")
+        return next()
+    }
+
+    setResponse(req, 200, "OK", "The request has succeeded.", User)
+    return next()
+}
+
 module.exports = {
-    ActiveUser, authorize
+    useUser, useAuth, fetchEvent, fetchUser
 }

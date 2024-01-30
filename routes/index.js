@@ -1,17 +1,28 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+const { fetchEvent, fetchUser } = require('../middleware/index');
+
+router.get('/', fetchUser, (req, res, next) => {
+  if (req.response.statusCode != 200) res.redirect('/login');
+  else res.render('index');
 });
 
-router.get('/login', function (req, res, next) {
-  res.render('login');
+router.get('/login', (req, res, next) => {
+  res.render('login', { title: "Login", id: "admin" });
 });
 
-router.get('/foto', (req, res) => {
-  res.render('foto');
+router.get('/login/:id', fetchEvent, (req, res, next) => {
+
+  let title = "Login";
+  if(req.response.statusCode == 200) title = req.response.data.title;
+  res.render('login', { title, id: req.params.id });
+});
+
+
+router.get('/foto', fetchUser, (req, res) => {
+  if (req.response.statusCode != 200) res.redirect('/login');
+  else res.render('foto');
 });
 
 module.exports = router;

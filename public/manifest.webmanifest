@@ -1,0 +1,48 @@
+{
+    "name": "Clicker",
+    "short_name": "Clicker",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#FFFFFF",
+    "lang": "en",
+    "scope": "/",
+    "description": "Clicker is een simplele foto app die je foto's laat maken en opslaan in je browser.",
+    "prefer_related_applications": true,
+    "orientation": "portrait",
+    "theme_color": "#FFFFFF",
+    "display_override": [
+        "window-controls-overlay",
+        "standalone",
+        "minimal-ui",
+        "fullscreen",
+        "browser"
+    ],
+    "icons": [
+        {
+            "src": "/images/Placeholder.png",
+            "sizes": "144x144",
+            "type": "image/png"
+        },
+        {
+            "src": "/images/Placeholder.png",
+            "sizes": "152x152",
+            "type": "image/png"
+        },
+        {
+            "src": "/images/Placeholder.png",
+            "sizes": "192x192",
+            "type": "image/svg"
+        },
+        {
+            "src": "/images/Placeholder.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "launch_handler": {
+        "client_mode": [
+            "navigate-existing",
+            "auto"
+        ]
+    }
+}

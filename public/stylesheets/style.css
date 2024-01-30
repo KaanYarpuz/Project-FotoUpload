@@ -2,3 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    @apply overflow-hidden
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+    @apply lighty ring-1 ring-black outline-none appearance-none
+}
+
+.otp-input {
+    @apply w-9 h-9 text-center flex items-center justify-center border rounded-md outline-none focus:border-gray-400 bg-white 
+}
+
+.opt-default {
+    @apply border-gray-300
+}
+
+.opt-active {
+    @apply border-gray-400
+}
+
+@layer utilities {
+    .lighty {
+        -webkit-box-shadow: 0 0 0 30px #ffffff inset !important; 
+        -webkit-text-fill-color: #000000 !important;
+        box-shadow: 0 0 0 30px #ffffff inset !important;
+        background-clip: content-box !important;
+    }
+
+
+    .otpLight {
+        -webkit-box-shadow: 0 0 0 30px #ffffff inset !important; 
+        -webkit-text-fill-color: #000000 !important;
+        box-shadow: 0 0 0 30px #ffffff inset !important;
+        background-clip: content-box !important;
+    }
+
+}

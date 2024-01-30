@@ -18,8 +18,8 @@ userSchema.pre('save', async function (next) {
     
 });
 
-userSchema.methods.validatePassword = async function validatePassword(data) {
-    return bcrypt.compare(data, this.password);
+userSchema.methods.validatePassword = async function validatePassword(password) {
+    return bcrypt.compare(password, this.password);
 };
 
 const User = model('User', userSchema);
