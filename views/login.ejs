@@ -4,27 +4,34 @@
 <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="stylesheet" href="/stylesheets/index.css" />
     <script src="/javascripts/opt.js" defer></script>
     <title>Home Page</title>
 </head>
 
-<body class=""></body>
+<body class="">
     <div class="flex flex-col items-center fixed w-full select-none justify-center min-h-screen px-4 overflow-hidden">
         <div class="mb-8 inline-block overflow-hidden rounded-full">
-            <img draggable="false" src="/images/Placeholder.png" alt="Event" class="h-[144px] w-[144px] object-cover" />
+            <img draggable="false" src="<%= image %>" alt="Event" class="h-[144px] w-[144px] object-cover" />
         </div>
-        <h1 id="event" class="text-4xl font-bold"><%= title %></h1>
-        <span class=" sr-only hidden" id="EventId"><%= id %></span>
+        <h1 id="event" class="text-4xl font-bold">
+            <%= title %>
+        </h1>
+        <span class=" sr-only hidden" id="EventId">
+            <%= id %>
+        </span>
         <form class="mt-8 w-full max-w-xs px-10">
             <div class="mb-4">
                 <label for="username" class="mb-2 block text-sm font-medium text-gray-700">Gebruikersnaam</label>
-                <input id="username" name="username" aria-label="username" autocomplete="username" placeholder="" class="w-full rounded-md border-gray-300 focus:border-gray-400 border px-3 py-2 outline-none" type="text" />
+                <input id="username" name="username" aria-label="username" autocomplete="username" placeholder=""
+                    class="w-full rounded-md border-gray-300 focus:border-gray-400 border px-3 py-2 outline-none"
+                    type="text" />
             </div>
             <div class="mb-6">
-                <% if (title !== 'Login' && id !== 'admin') { %>
+                <% if (title !=='Login' && id !=='admin' ) { %>
                     <label for="pincode" class="mb-2 block text-sm font-medium text-gray-700">Pincode</label>
                     <div class="container">
                         <div id="inputs" class=" flex items-center justify-between">
@@ -36,10 +43,12 @@
                             <input class="otp-input opt-defaul" type="text" inputmode="numeric" maxlength="1" />
                         </div>
                     </div>
-                <% } else { %>
-                    <label for="password" class="mb-2 block text-sm font-medium text-gray-700">Wachtwoord</label>
-                    <input id="password" type="password" aria-label="password" autocomplete="password" class="w-full rounded-md border-gray-300 focus:border-gray-400 border px-3 py-2 outline-none" name="password" class="form-control">
-                <% } %>
+                    <% } else { %>
+                        <label for="password" class="mb-2 block text-sm font-medium text-gray-700">Wachtwoord</label>
+                        <input id="password" type="password" aria-label="password" autocomplete="password"
+                            class="w-full rounded-md border-gray-300 focus:border-gray-400 border px-3 py-2 outline-none"
+                            name="password" class="form-control">
+                        <% } %>
             </div>
             <button type="submit"
                 class="w-full rounded-md bg-green-500 px-4 py-2 text-white shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">

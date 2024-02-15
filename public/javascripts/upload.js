@@ -3,7 +3,6 @@ let uploadedCount = 0;
 const maxUploads = 10;
 
 document.addEventListener('click', (event) => {
-  // Check if the clicked element is not part of the image or its delete button
   const isImageOrDeleteButton = event.target.closest('.image-container, .delete-button');
   if (!isImageOrDeleteButton) {
     hideAllDeleteButtons();
@@ -53,6 +52,10 @@ function handleFileUpload(files) {
       fileList.appendChild(listItem);
 
       listItem.addEventListener('click', () => {
+        // Hide other delete buttons and remove blur from other images
+        hideAllDeleteButtons();
+        removeBlurFromAllImages();
+
         deleteButton.classList.toggle('hidden');
         img.style.filter = img.style.filter === 'blur(2px)' ? 'none' : 'blur(2px)';
       });
@@ -68,3 +71,21 @@ function deleteImage(listItem, fileName) {
   uploadedFiles.delete(fileName);
   uploadedCount--;
 }
+
+document.getElementById('uploadButton').addEventListener('click', function () {
+  const files = document.getElementById('dropzone-file').files;
+  const eventid = document.getElementById('eventid').innerText.trim();
+  const formData = new FormData();
+  for (let i = 0; i < files.length; i++) {
+    formData.append('photos', files[i]);
+  }
+  fetch(`/api/upload/${eventid}`, {
+    method: 'POST', body: formData
+  }).then(response => {
+    window.location.href = `/`;
+
+    console.log("success")
+  }).catch(error => {
+    console.log("error")
+  });
+});

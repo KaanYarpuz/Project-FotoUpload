@@ -8,6 +8,11 @@ body {
     @apply overflow-hidden
 }
 
+main {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {

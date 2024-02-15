@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="stylesheet" href="/stylesheets/index.css">
+
+    <script src="/javascripts/logout.js" defer></script>
+    <script src="/javascripts/images.js" defer></script>
+
+    <title>Home Page</title>
+</head>
+
+<body class=" fixed w-full h-full p-5">
+    <div class=" h-full grid gap-2 grid-cols-1 grid-rows-[1fr,15fr,1.6fr]">
+        <nav class=" border-b-2 pb-2 border-gray-200 ">
+            <div class=" flex w-full gap-2 justify-between items-center">
+                <div>
+                    <p class="text-lg font-medium">
+                        <%= title %> - album
+                    </p>
+                    <p class=" -mt-2 ml-[0.22rem] text-sm font-normal opacity-80">Ingelogd als <%= username %>
+                    </p>
+                </div>
+                <div class=" flex items-center gap-2">
+                    <button id="downloadZip"
+                        class="bg-black text-white flex items-center justify-center px-2 py-1 rounded-md ">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <path fill="currentColor"
+                                d="M12 4v12.25L17.25 11l.75.66l-6.5 6.5l-6.5-6.5l.75-.66L11 16.25V4zM3 19h1v2h15v-2h1v3H3z" />
+                        </svg>
+                    </button>
+                    <button id="logout" class="bg-black text-white px-4 py-1 rounded-md ">uitloggen</button>
+
+                </div>
+                <div id="EventId" class=" sr-only hidden">
+                    <%= eventid %>
+                </div>
+
+            </div>
+        </nav>
+
+        <main class="overflow-auto rounded-xl scroll-smooth">
+            <div id="imageContainer"
+                class="snap-x snap-start h-full snap-mandatory overflow-auto scroll-snap-type-y-mandatory grid md:grid-cols-3 xl:grid-cols-4 grid-cols-2 gap-2">
+
+            </div>
+        </main>
+        <footer class=" bottom-5 sticky border-t-2 pt-2 border-gray-200">
+            <div class="flex justify-evenly items-center">
+                <a href="/" class="flex opacity-50 hover:opacity-50 flex-col items-center justify-center">
+                    <svg class=" w-10 h-10" xmlns="http://www.w3.org/2000/svg" width="32" height="32"
+                        viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M5 3h13a3 3 0 0 1 3 3v13a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3m0 1a2 2 0 0 0-2 2v11.59l4.29-4.3l2.5 2.5l5-5L20 16V6a2 2 0 0 0-2-2zm4.79 13.21l-2.5-2.5L3 19a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-1.59l-5.21-5.2zM7.5 6A2.5 2.5 0 0 1 10 8.5A2.5 2.5 0 0 1 7.5 11A2.5 2.5 0 0 1 5 8.5A2.5 2.5 0 0 1 7.5 6m0 1A1.5 1.5 0 0 0 6 8.5A1.5 1.5 0 0 0 7.5 10A1.5 1.5 0 0 0 9 8.5A1.5 1.5 0 0 0 7.5 7" />
+                    </svg>
+                    <p class="text-sm font-medium">Album</p>
+                </a>
+                <a href="/upload" class="flex opacity-30 hover:opacity-50 flex-col items-center justify-center">
+                    <svg class=" w-10 h-10" xmlns="http://www.w3.org/2000/svg" width="32" height="32"
+                        viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M11.5 8C14 8 16 10 16 12.5S14 17 11.5 17S7 15 7 12.5S9 8 11.5 8m0 1A3.5 3.5 0 0 0 8 12.5a3.5 3.5 0 0 0 3.5 3.5a3.5 3.5 0 0 0 3.5-3.5A3.5 3.5 0 0 0 11.5 9M5 5h2l2-2h5l2 2h2a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3m4.41-1l-2 2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-2.41l-2-2z" />
+                    </svg>
+                    <p class="text-sm font-medium">Upload</p>
+                </a>
+            </div>
+        </footer>
+    </div>
+</body>
+
+</html>
