@@ -42,7 +42,7 @@ const useAuth = async (req, res, next) => {
     }
 
     if (!password) {
-        const TrimedId = eventid.trim()
+        const TrimedId = eventid?.trim()
         const user = await Event.findOne({ eventcode: eventcode, _id: TrimedId }).catch(err => {
             setResponse(req, 500, "Internal Server Error", "The server encountered an unexpected condition which prevented it from fulfilling the request.")
             return next()

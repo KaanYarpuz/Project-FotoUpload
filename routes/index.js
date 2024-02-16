@@ -12,11 +12,14 @@ router.get('/', fetchUser, async (req, res, next) => {
   const eventid = req.response?.data?.eventid?.trim();
   let title = "Home";
 
-
   if (req.response.statusCode != 200) res.redirect('/login');
   if (admin) {
     const DataEvent = await showevents();
-    res.render('./home/admin', { DataEvent: DataEvent });
+    const referer = req.headers.host;
+    console.log(referer);
+    res.render('./home/admin', {
+      DataEvent: DataEvent, URL: referer
+    });
   }
 
   else {
@@ -31,8 +34,9 @@ router.get('/login', fetchUser, (req, res, next) => {
   const sessionId = req.cookies.Token;
   const user = Users.get(sessionId);
   if (user) res.redirect('/');
+  const code = req.query.code || "";
 
-  res.render('login', { title: "Login", id: "admin", image: "/images/Placeholder.png" });
+  res.render('login', { title: "Login", id: "admin", image: "/images/Placeholder.png", code });
 });
 
 router.get('/login/:id', fetchUser, fetchEvent, (req, res, next) => {
@@ -44,8 +48,9 @@ router.get('/login/:id', fetchUser, fetchEvent, (req, res, next) => {
   let image = "/images/Placeholder.png";
   if (req.response.statusCode == 200) title = req.response.data.title;
   if (req.response.data) image = req.response.data.image
+  const code = req.query.code || "";
 
-  res.render('login', { title, id: req.params.id, image });
+  res.render('login', { title, id: req.params.id, image, code });
 });
 
 

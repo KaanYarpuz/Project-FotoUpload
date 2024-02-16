@@ -13,6 +13,11 @@
 </head>
 
 <body class="">
+    <div class=" fixed w-full z-50">
+        <form onsubmit="event.preventDefault(); window.location.href = '/login/' +  document.getElementById('idcode').value" class=" flex">
+            <input class="w-full rounded border-gray-300 focus:border-gray-400 border px-3 py-2 outline-none" type="text" id="idcode" placeholder="<% if (id === 'admin') { %>Event Link<% } else { %><%= id %><% } %>"/>
+        </form>
+    </div>
     <div class="flex flex-col items-center fixed w-full select-none justify-center min-h-screen px-4 overflow-hidden">
         <div class="mb-8 inline-block overflow-hidden rounded-full">
             <img draggable="false" src="<%= image %>" alt="Event" class="h-[144px] w-[144px] object-cover" />

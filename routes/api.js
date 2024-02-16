@@ -7,7 +7,9 @@ const archiver = require('archiver');
 
 const { useAuth, useUserCheck } = require('../middleware/index');
 const { Users, ActiveUsers } = require('../middleware/sessions/index');
-const { Event } = require('../middleware/mongo/index')
+const { Event } = require('../middleware/mongo/index');
+
+
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -48,12 +50,15 @@ router.post('/auth', useAuth, (req, res, next) => {
 });
 
 router.post('/upload/:id', useUserCheck({ "admin": false }), upload.array('photos', 10), (req, res, next) => {
-  if (req.files.length === 0) return res.status(400).json({ message: "No file uploaded" });
+  if (req.files.length === 0)
+    return res.status(400).json({
+      message: "No file uploaded"
+    });
+
   res.status(200).json({ message: "Upload Success" });
 });
 
 router.post('/events', useUserCheck({ "admin": true }), EventUpload.single('photo'), async (req, res, next) => {
-
   const { title, description } = req.body;
   if (!title || !description || !req.file) return res.status(400).json({ message: "Invalid Request" });
 
@@ -61,12 +66,13 @@ router.post('/events', useUserCheck({ "admin": true }), EventUpload.single('phot
   const image = req.file.path.replace(/\\/g, '/').replace('public', '');
 
   const event = await Event.create({ title, description, eventcode, image });
-  const id = event.id;
 
-  const dir = `./public/uploads/${id}/`;
-  if (!fs.existsSync(dir)) { fs.mkdirSync(dir, { recursive: true }) }
-
-  res.status(200).json({ message: "Event Created" });
+  res.status(200).json({
+    statusCode: 200,
+    statusMessage: "OK",
+    message: "Event created successfully",
+    data: event
+  });
 
 });
 
@@ -100,7 +106,7 @@ router.get('/downloadZip/:id', useAuth, (req, res, next) => {
   const eventId = req.params.id;
   const directoryPath = `./public/uploads/${eventId}/`;
 
-  const archive = archiver('zip', { zlib: { level: 9 }});
+  const archive = archiver('zip', { zlib: { level: 9 } });
 
   archive.on('error', (err) => {
     res.status(500).json({
@@ -150,9 +156,9 @@ router.get('/map/:id', (req, res, next) => {
     }
 
     if (page < 1 || page > fileGroups.length) return res.status(400).json({
-      statusCode: 400,
-      statusMessage: "Bad Request",
-      message: "Invalid page number"
+      statusCode: 404,
+      statusMessage: "Not Found",
+      message: "Page not found"
     });
 
     res.status(200).json({
@@ -166,8 +172,34 @@ router.get('/map/:id', (req, res, next) => {
 
   });
 
-  });
+});
 
+router.delete('/events/:id', useUserCheck({ "admin": true }), async (req, res, next) => {
+  const eventId = req.params.id;
+
+  try {
+    const event = await Event.findByIdAndDelete(eventId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    const eventFolderPath = path.join(__dirname, '..', 'public', 'uploads', eventId);
+    const eventIconPath = path.join(__dirname, '..', 'public',  event.image);
+
+    if (fs.existsSync(eventIconPath)) {
+      fs.unlinkSync(eventIconPath);
+    }
+
+    if (fs.existsSync(eventFolderPath)) {
+      fs.rmdirSync(eventFolderPath, { recursive: true });
+    }
+
+    res.status(200).json({ message: "Event deleted successfully", event });
+  } catch (error) {
+    console.error('Error deleting event:', error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 
 

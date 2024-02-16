@@ -23,12 +23,15 @@
                 <button id="logout" class="bg-black text-white px-4 py-1 rounded-md ">uitloggen</button>
             </div>
         </nav>
-        <main class="overflow-auto rounded-xl scroll-smooth">
+        <main class="overflow-auto rounded-xl border-2 border-gray-200 bg-gray-50 scroll-smooth">
             <div class="snap-x snap-start snap-mandatory overflow-auto scroll-snap-type-y-mandatory flex-col gap-2">
-
-
+                <input type="text" id="title" placeholder="Event Title" required>
+                <textarea id="description" placeholder="Event Description" required></textarea>
+                <input type="file" id="photo" accept="image/*" required>
+                <button type="button" class="bg-black text-white px-4 py-2 rounded-md" id="UploadAdmin">CreateEvent</button>
             </div>
         </main>
+
         <footer class=" bottom-5 sticky border-t-2 pt-2 border-gray-200">
             <div class="flex justify-evenly items-center">
                 <a href="/" class="flex opacity-30 hover:opacity-50 flex-col items-center justify-center">
@@ -51,5 +54,6 @@
         </footer>
     </div>
 </body>
+<script src="/javascripts/uploadAdmin.js"></script>
 
 </html>
