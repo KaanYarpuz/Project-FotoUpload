@@ -14,9 +14,10 @@ router.get('/', fetchUser, async (req, res, next) => {
 
   if (req.response.statusCode != 200) res.redirect('/login');
   if (admin) {
-    const DataEvent = await showevents();
+
+    const DataEvent = await showevents(req);
     const referer = req.headers.host;
-    console.log(referer);
+
     res.render('./home/admin', {
       DataEvent: DataEvent, URL: referer
     });
@@ -52,7 +53,6 @@ router.get('/login/:id', fetchUser, fetchEvent, (req, res, next) => {
 
   res.render('login', { title, id: req.params.id, image, code });
 });
-
 
 router.get('/upload', fetchUser, async (req, res) => {
   const username = req.response?.data?.username;

@@ -18,7 +18,7 @@
         <nav class=" border-b-2 pb-2 border-gray-200 ">
             <div class=" flex w-full gap-2 justify-between items-center">
                 <div>
-                    <p class="text-lg font-medium">Admin - evenementen</p>
+                    <p class="text-lg font-medium">Evenementen</p>
                 </div>
                 <button id="logout" class="bg-black text-white px-4 py-1 rounded-md ">uitloggen</button>
             </div>
@@ -26,8 +26,7 @@
         <main class="overflow-auto rounded-xl scroll-smooth">
             <div
                 class="snap-x snap-start snap-mandatory overflow-auto scroll-snap-type-y-mandatory flex flex-col gap-2">
-
-                <% DataEvent.forEach(function(event) { %>
+                <% DataEvent.forEach(event=> { %>
                     <div class=" p-2 bg-gray-50 w-full border-2 border-gray-200 rounded-xl ">
                         <div class=" flex items-start gap-5">
                             <img src="<%= event.image %>" alt="Event"
@@ -40,7 +39,8 @@
                                     <%= event.description %>
                                 </p>
                                 <div class=" flex items-center gap-2">
-                                    <button id="eventcode" class="bg-green-500 text-white px-4 py-1 select-text text-sm rounded-md ">
+                                    <button id="eventcode"
+                                        class="bg-green-500 text-white px-4 py-1 select-text text-sm rounded-md ">
                                         <%= event.eventcode %>
                                     </button>
                                     <button class="bg-red-500 text-white px-4 py-1 text-sm rounded-md delete-btn"
@@ -54,13 +54,14 @@
                                             <path fill="currentColor"
                                                 d="M8 13v-1h7v1zm7.5-6a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H13v-1h2.5c2.5 0 4.5-2 4.5-4.5S18 8 15.5 8H13V7zm-8 11A5.5 5.5 0 0 1 2 12.5A5.5 5.5 0 0 1 7.5 7H10v1H7.5C5 8 3 10 3 12.5S5 17 7.5 17H10v1z" />
                                         </svg>
-                                    </a>
-
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <% }); %>
                     </div>
+                    <% }) %>
+            </div>
         </main>
         <footer class=" bottom-5 sticky border-t-2 pt-2 border-gray-200">
             <div class="flex justify-evenly items-center">

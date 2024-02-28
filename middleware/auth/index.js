@@ -1,14 +1,14 @@
 const bcrypt = require('bcrypt');
+const { User } = require('../mongo/index.js')
+const { Users, ActiveUsers } = require('../sessions/index.js');
 
-const { Event, User } = require('../mongo/index.js')
-const { Users, ActiveUsers } = require('../sessions/index.js')
 
 const validateRequest = async (request) => {
     if (Object.keys(request).length === 0) return false
     const { username, eventcode, eventid, password } = request;
 
     if (UseAdmin(username, password)) return true
-    return (username && eventcode && eventid)
+    return (username && eventcode && eventid?.trim())
 }
 
 const UseAdmin = async (username, password) => {
@@ -17,7 +17,6 @@ const UseAdmin = async (username, password) => {
 
     const passwordMatch = await bcrypt.compare(password, user.password).catch(err => false)
     return passwordMatch
-
 }
 
 const setResponse = (req, statusCode, statusMessage, message, data = undefined) => {
@@ -32,12 +31,19 @@ const SetSession = async (user) => {
 
     const SessionId = crypto.randomUUID()
     Users.set(SessionId, { 
-        ...user, 
+        userid: user.id || undefined,
+        eventid: user.eventid?.trim() || undefined,
+        username: user.username,
         admin: user.password ? true : false,
         eventcode: undefined,
         password: undefined 
     })
     ActiveUsers.set(user.username, SessionId)
+
+    setTimeout(() => {
+        ActiveUsers.delete(user.username);
+        Users.delete(SessionId);
+    }, 12 * 60 * 60 * 1000); 
 
     return SessionId
 }

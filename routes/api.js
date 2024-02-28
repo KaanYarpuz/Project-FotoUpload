@@ -9,8 +9,6 @@ const { useAuth, useUserCheck } = require('../middleware/index');
 const { Users, ActiveUsers } = require('../middleware/sessions/index');
 const { Event } = require('../middleware/mongo/index');
 
-
-
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const id = req.params.id;
@@ -35,12 +33,11 @@ const Eventstorage = multer.diskStorage({
   }
 });
 
-
 const upload = multer({ storage: storage });
 const EventUpload = multer({ storage: Eventstorage });
 
 router.get('/', (req, res, next) => {
-  res.send('respond with a resource');
+  res.send('reageer met een bron');
 });
 
 router.post('/auth', useAuth, (req, res, next) => {
@@ -49,33 +46,42 @@ router.post('/auth', useAuth, (req, res, next) => {
 
 });
 
-router.post('/upload/:id', useUserCheck({ "admin": false }), upload.array('photos', 10), (req, res, next) => {
+router.post('/upload/:id', useUserCheck({ "admin": false }), upload.array('photos', 15), (req, res, next) => {
   if (req.files.length === 0)
     return res.status(400).json({
-      message: "No file uploaded"
+      statusCode: 400,
+      statusMessage: "Fout verzoek",
+      message: "Geen bestanden geüpload"
     });
 
-  res.status(200).json({ message: "Upload Success" });
+  res.status(200).json({ 
+    statusCode: 200,
+    statusMessage: "OK",
+    message: "Bestanden succesvol geüpload",
+    });
 });
 
 router.post('/events', useUserCheck({ "admin": true }), EventUpload.single('photo'), async (req, res, next) => {
   const { title, description } = req.body;
-  if (!title || !description || !req.file) return res.status(400).json({ message: "Invalid Request" });
+  if (!title || !description || !req.file) return res.status(400).json({ 
+    statusCode: 400,
+    statusMessage: "Fout verzoek",
+    message: "Titel, beschrijving en foto zijn verplicht"
+  });
 
   const eventcode = Math.floor(100000 + Math.random() * 900000);
   const image = req.file.path.replace(/\\/g, '/').replace('public', '');
+  const CreatedById = req.response.data.userid; 
 
-  const event = await Event.create({ title, description, eventcode, image });
+  const event = await Event.create({ title, description, eventcode, image, CreatedById});
 
   res.status(200).json({
     statusCode: 200,
     statusMessage: "OK",
-    message: "Event created successfully",
+    message: "Evenement succesvol aangemaakt",
     data: event
   });
-
 });
-
 
 router.get('/logout', (req, res, next) => {
   const sessionId = req.cookies.Token;
@@ -90,14 +96,14 @@ router.get('/logout', (req, res, next) => {
       res.status(200).json({
         statusCode: 200,
         statusText: "OK",
-        message: "Logout Success"
+        message: "Uitloggen gelukt"
       });
     }
 
     res.status(404).json({
       statusCode: 404,
-      statusMessage: "Not Found",
-      message: "User not found"
+      statusMessage: "Niet gevonden",
+      message: "Gebruiker niet gevonden"
     });
   }
 });
@@ -111,8 +117,8 @@ router.get('/downloadZip/:id', useAuth, (req, res, next) => {
   archive.on('error', (err) => {
     res.status(500).json({
       statusCode: 500,
-      statusMessage: "Error creating zip file",
-      message: "An unexpected condition was encountered which prevented the server from fulfilling the request."
+      statusMessage: "Fout bij het maken van het zip-bestand",
+      message: "Er is een onverwachte situatie opgetreden waardoor de server niet aan het verzoek kon voldoen."
     });
   });
 
@@ -121,7 +127,7 @@ router.get('/downloadZip/:id', useAuth, (req, res, next) => {
 
   archive.directory(directoryPath, false);
   archive.finalize().then(() => {
-    console.log('Zip file created and sent to client');
+    console.log('Zip-bestand gemaakt en naar de client verzonden');
   });
 
 });
@@ -130,7 +136,7 @@ router.get('/downloadZip/:id', useAuth, (req, res, next) => {
 router.get('/map/:id', (req, res, next) => {
   const sessionId = req.cookies.Token;
   const user = Users.get(sessionId);
-  if (!user) return res.status(401).json({ message: "Unauthorized" });
+  if (!user) return res.status(401).json({ message: "Niet geautoriseerd" });
 
 
   const page = req.query.page;
@@ -141,8 +147,8 @@ router.get('/map/:id', (req, res, next) => {
 
     if (err) return res.status(404).json({
       statusCode: 404,
-      statusMessage: "Not Found",
-      message: "Event folder not found"
+      statusMessage: "Niet gevonden",
+      message: "Evenementmap niet gevonden"
     });
 
     let fileGroups = [];
@@ -157,14 +163,14 @@ router.get('/map/:id', (req, res, next) => {
 
     if (page < 1 || page > fileGroups.length) return res.status(400).json({
       statusCode: 404,
-      statusMessage: "Not Found",
-      message: "Page not found"
+      statusMessage: "Niet gevonden",
+      message: "Pagina niet gevonden"
     });
 
     res.status(200).json({
       statusCode: 200,
       statusMessage: "OK",
-      message: "sussess",
+      message: "succes",
       page: page,
       totalpages: fileGroups.length,
       data: fileGroups[page - 1]
@@ -180,11 +186,11 @@ router.delete('/events/:id', useUserCheck({ "admin": true }), async (req, res, n
   try {
     const event = await Event.findByIdAndDelete(eventId);
     if (!event) {
-      return res.status(404).json({ message: "Event not found" });
+      return res.status(404).json({ message: "Evenement niet gevonden" });
     }
 
     const eventFolderPath = path.join(__dirname, '..', 'public', 'uploads', eventId);
-    const eventIconPath = path.join(__dirname, '..', 'public',  event.image);
+    const eventIconPath = path.join(__dirname, '..', 'public', event.image);
 
     if (fs.existsSync(eventIconPath)) {
       fs.unlinkSync(eventIconPath);
@@ -194,10 +200,10 @@ router.delete('/events/:id', useUserCheck({ "admin": true }), async (req, res, n
       fs.rmdirSync(eventFolderPath, { recursive: true });
     }
 
-    res.status(200).json({ message: "Event deleted successfully", event });
+    res.status(200).json({ message: "Evenement succesvol verwijderd", event });
   } catch (error) {
-    console.error('Error deleting event:', error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error('Fout bij het verwijderen van het evenement:', error);
+    res.status(500).json({ message: "Interne serverfout" });
   }
 });
 

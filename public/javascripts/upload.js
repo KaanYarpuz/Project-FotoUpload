@@ -30,7 +30,7 @@ function handleFileUpload(files) {
   for (const file of files) {
     if (!uploadedFiles.has(file.name) && uploadedCount < maxUploads) {
       const listItem = document.createElement('li');
-      listItem.classList.add('w-64', 'relative');
+      listItem.classList.add('w-60', 'relative');
       fileList.style.listStyleType = 'none';
 
       const imgContainer = document.createElement('div');
@@ -39,7 +39,7 @@ function handleFileUpload(files) {
       const img = document.createElement('img');
       img.src = URL.createObjectURL(file);
       img.alt = 'Preview';
-      img.classList.add('w-64', 'h-64', 'object-cover', 'rounded-md', 'mt-2', 'blurred-image');
+      img.classList.add('w-60', 'h-60', 'object-cover', 'rounded-md', 'mt-2', 'blurred-image');
 
       const deleteButton = document.createElement('button');
       deleteButton.textContent = 'Delete';
@@ -72,20 +72,32 @@ function deleteImage(listItem, fileName) {
   uploadedCount--;
 }
 
-document.getElementById('uploadButton').addEventListener('click', function () {
+document.getElementById('uploadButton').onclick = async () => {
   const files = document.getElementById('dropzone-file').files;
   const eventid = document.getElementById('eventid').innerText.trim();
   const formData = new FormData();
-  for (let i = 0; i < files.length; i++) {
-    formData.append('photos', files[i]);
-  }
-  fetch(`/api/upload/${eventid}`, {
-    method: 'POST', body: formData
-  }).then(response => {
-    window.location.href = `/`;
 
-    console.log("success")
-  }).catch(error => {
-    console.log("error")
-  });
-});
+  for (const file of files) formData.append('photos', file);
+  const request = await fetch(`/api/upload/${eventid}`, {
+    method: 'POST',
+    body: formData
+  }); const response = await request.json();
+
+  if (response.statusCode === 200) {
+    window.location.href = '/';
+  } else {
+    const error = document.getElementById('error');
+    const button = document.getElementById('uploadthiny');
+
+    button.classList.add('border-red-500', 'text-red-700');
+
+    error.innerText = "Er is een fout opgetreden bij het uploaden van de bestanden.";
+    setTimeout(() => {
+      error.innerText = '';
+      button.classList.remove('border-red-500', 'text-red-700');
+      
+    }, 10000);
+
+  }
+
+};

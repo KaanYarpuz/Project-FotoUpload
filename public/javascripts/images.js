@@ -13,9 +13,7 @@ const loadImages = () => {
     const eventId = document.getElementById("EventId").innerText.trim()
 
     fetch(`/api/map/${eventId}?page=${page}`).then(response => response.json()).then(event => {
-
         if (event.statusCode !== 200) return;
-
         let delay = 0;
         event.data.forEach((image, index) => {
             const div = document.createElement('div');
@@ -35,34 +33,29 @@ const loadImages = () => {
             setTimeout(() => {
                 isLoading = false;
                 const images = imageContainer.querySelectorAll('img')
-
-                images.forEach(image => {
-                    image.onclick = () => {
-                        window.open(image.src, '_blank');
-                    }
-                })
-
+                images.forEach(image => image.onclick = () => window.open(image.src, '_blank'))
 
                 location.href = `#div-${imageCount}`;
                 setLoadEvent(images[images.length - 1])
                 setLoadEvent(images[images.length - 2])
             }, LOAD_TIMEOUT);
-
         })
-    }).catch(error => {
-        console.error('Error:', error);
-    });
+    }).catch(() => console.error('Error:', "Er is iets fout gegaan bij het ophalen van de foto's"));
 }
-
-
-
 
 const setLoadEvent = (element) => {
-    element.onmouseover = loadMoreImages;
-    element.ontouchstart = loadMoreImages;
+    element.addEventListener('mouseover', loadMoreImages, { passive: true, });
+    element.addEventListener('touchstart', loadMoreImages, { passive: true, });
 }
 
-const loadMoreImages = () => {
+const removeLoadEvents = (element) => {
+    element.removeEventListener('mouseover', loadMoreImages);
+    element.removeEventListener('touchstart', loadMoreImages);
+}
+
+const loadMoreImages = (event) => {
+    const images = imageContainer.querySelectorAll('img')
+    images.forEach(removeLoadEvents);
     if (!isLoading) {
         page++;
         loadImages();
@@ -71,6 +64,7 @@ const loadMoreImages = () => {
 loadImages();
 
 document.getElementById('downloadZip').addEventListener('click', async () => {
+    alert('Het downloaden van de foto\'s is gestart. Dit kan enkele seconden duren.');
     const eventId = document.getElementById('EventId').innerText.trim();
     window.location.href = `/api/downloadZip/${eventId}`;
 });

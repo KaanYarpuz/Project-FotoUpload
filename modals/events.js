@@ -5,6 +5,7 @@ const eventSchema = new Schema({
     description:    { type: String, required: true                               },
     image:          { type: String, required: true, default: "/images/Plant.png" },
     eventcode:      { type: String, required: true                               },
+    CreatedById:    { type: String, required: false                               },
 });
 
 const Event = model("event", eventSchema);
