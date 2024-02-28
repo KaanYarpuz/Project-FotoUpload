@@ -30,6 +30,40 @@ const useUserCheck = (data) => {
     }
 }
 
+const useRegister = async (req, res, next) => {
+
+    const request = req.body
+    const { username, password } = request
+
+    console.log(request)
+
+    if (Object.keys(request).length === 0) {
+        setResponse(req, 400, "Foute aanvraag", "Het verzoek kon niet worden begrepen door de server vanwege ontbrekende velden.")
+        return next()
+    }
+
+    if (username === "" || password === "") {
+        setResponse(req, 400, "Foute aanvraag", "Het verzoek kon niet worden begrepen door de server vanwege ontbrekende velden.")
+        return next()
+    }
+
+    const user = await User.findOne({ username })
+    if (user) {
+        setResponse(req, 409, "Conflict", "Het verzoek kon niet worden geaccepteerd door de server vanwege een conflict.")
+        return next()
+    }
+    const newUser = await User.create({ username, password })
+
+
+    req.sessionId = await SetSession(newUser)
+    setResponse(req, 200, "OK", "Het verzoek is geslaagd.", {
+        username,
+        admin: true
+    })
+    return next()
+
+}
+
 
 const useAuth = async (req, res, next) => {
 
@@ -48,7 +82,6 @@ const useAuth = async (req, res, next) => {
     }
 
     if (eventcode && eventid?.trim()) {
-
         const TrimedId = eventid?.trim()
 
         if (username == "") {
@@ -157,5 +190,5 @@ const useUser = async (req, res, next) => {
 }
 
 module.exports = {
-    useUser, useAuth, fetchEvent, fetchUser, showevents, useUserCheck
+    useUser, useAuth, fetchEvent, fetchUser, showevents, useUserCheck, useRegister
 }

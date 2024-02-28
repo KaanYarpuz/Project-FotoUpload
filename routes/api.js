@@ -5,7 +5,7 @@ const router = express.Router();
 const fs = require('fs');
 const archiver = require('archiver');
 
-const { useAuth, useUserCheck } = require('../middleware/index');
+const { useAuth, useUserCheck, useRegister } = require('../middleware/index');
 const { Users, ActiveUsers } = require('../middleware/sessions/index');
 const { Event } = require('../middleware/mongo/index');
 
@@ -46,6 +46,13 @@ router.post('/auth', useAuth, (req, res, next) => {
 
 });
 
+
+router.post('/register', useRegister, (req, res, next) => {
+  if (req.sessionId) res.cookie("Token", req.sessionId, { httpOnly: true, secure: false, sameSite: true, maxAge: 24 * 60 * 60 * 1000 });
+  res.status(req.response.statusCode).json(req.response);
+
+});
+
 router.post('/upload/:id', useUserCheck({ "admin": false }), upload.array('photos', 15), (req, res, next) => {
   if (req.files.length === 0)
     return res.status(400).json({
@@ -54,16 +61,16 @@ router.post('/upload/:id', useUserCheck({ "admin": false }), upload.array('photo
       message: "Geen bestanden geüpload"
     });
 
-  res.status(200).json({ 
+  res.status(200).json({
     statusCode: 200,
     statusMessage: "OK",
     message: "Bestanden succesvol geüpload",
-    });
+  });
 });
 
 router.post('/events', useUserCheck({ "admin": true }), EventUpload.single('photo'), async (req, res, next) => {
   const { title, description } = req.body;
-  if (!title || !description || !req.file) return res.status(400).json({ 
+  if (!title || !description || !req.file) return res.status(400).json({
     statusCode: 400,
     statusMessage: "Fout verzoek",
     message: "Titel, beschrijving en foto zijn verplicht"
@@ -71,9 +78,9 @@ router.post('/events', useUserCheck({ "admin": true }), EventUpload.single('phot
 
   const eventcode = Math.floor(100000 + Math.random() * 900000);
   const image = req.file.path.replace(/\\/g, '/').replace('public', '');
-  const CreatedById = req.response.data.userid; 
+  const CreatedById = req.response.data.userid;
 
-  const event = await Event.create({ title, description, eventcode, image, CreatedById});
+  const event = await Event.create({ title, description, eventcode, image, CreatedById });
 
   res.status(200).json({
     statusCode: 200,

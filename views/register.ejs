@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="stylesheet" href="/stylesheets/index.css" />
+    <script src="/javascripts/register.js" defer></script>
+
+    <title>Home Page</title>
+</head>
+
+<body class="">
+    <div class=" fixed w-full z-50">
+    </div>
+    <div class="flex flex-col items-center fixed w-full select-none justify-center min-h-screen px-4 overflow-hidden">
+        <h1 id="event" class="text-3xl font-bold">
+            <%= title %>
+        </h1>
+        <form class="mt-8 w-full max-w-xs px-10">
+            <div class="mb-4">
+                <label for="username" class="mb-2 block text-sm font-medium text-gray-700">Gebruikersnaam</label>
+                <input id="username" name="username" aria-label="username" autocomplete="username" placeholder=""
+                    class="w-full rounded-md border-gray-300 focus:border-gray-400 border px-3 py-2 outline-none"
+                    type="text" />
+            </div>
+            <div class="mb-6">
+                <label for="password" class="mb-2 block text-sm font-medium text-gray-700">Wachtwoord</label>
+                <input id="password" type="password" aria-label="password" autocomplete="password"
+                    class="w-full rounded-md border-gray-300 focus:border-gray-400 border px-3 py-2 outline-none"
+                    name="password" class="form-control">
+            </div>
+            <div class="text-red-500 text-sm leading-[1.1rem] mb-6" id="error"></div>
+            <button type="submit"
+                class="w-full rounded-md bg-green-500 px-4 py-2 text-white shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                Aanmelden
+            </button>
+        </form>
+        <p class=" absolute bottom-10 text-sm text-gray-500 hover:text-gray-700 text-center">
+            Heb je al een account?
+            <a href="/login" class=" font-bold text-green-600">
+                Log in
+            </a>
+        </p>
+    </div>
+
+</body>
+
+</html>

@@ -30,6 +30,10 @@ router.get('/', fetchUser, async (req, res, next) => {
   }
 });
 
+router.get('/register', fetchUser, (req, res, next) => {
+  res.render('register', { title: "Registeer Account" });
+});
+
 router.get('/login', fetchUser, (req, res, next) => {
 
   const sessionId = req.cookies.Token;
