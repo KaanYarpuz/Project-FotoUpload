@@ -10,6 +10,7 @@
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="stylesheet" href="/stylesheets/index.css">
     <script src="/javascripts/logout.js" defer></script>
+    <script src="/javascripts/unregister.js" defer></script>
     <title>Home Page</title>
 </head>
 
@@ -18,54 +19,42 @@
         <nav class=" border-b-2 pb-2 border-gray-200 ">
             <div class=" flex w-full gap-2 justify-between items-center">
                 <div>
-                    <p class="text-lg font-medium">Evenementen</p>
+                    <p class="text-lg font-medium">Account gegevens</p>
                 </div>
                 <button id="logout" class="bg-black text-white px-4 py-1 rounded-md ">uitloggen</button>
             </div>
         </nav>
-        <main class="overflow-auto rounded-xl scroll-smooth">
-            <div
-                class="snap-x snap-start snap-mandatory overflow-auto scroll-snap-type-y-mandatory flex flex-col gap-2">
-                <% DataEvent.forEach(event=> { %>
-                    <div class=" p-2 bg-gray-50 w-full border-2 border-gray-200 rounded-xl ">
-                        <div class=" flex items-start gap-5">
-                            <img src="<%= event.image %>" alt="Event"
-                                class="h-[4.8rem] w-[4.8rem] object-cover rounded-lg" />
-                            <div>
-                                <p class="text-lg font-medium">
-                                    <%= event.title %>
-                                </p>
-                                <p class="text-sm -mt-2 mb-2">
-                                    <%= event.description %>
-                                </p>
-                                <div class=" flex items-center gap-2">
-                                    <button id="eventcode"
-                                        class="bg-green-500 text-white px-4 py-1 select-text text-sm rounded-md ">
-                                        <%= event.eventcode %>
-                                    </button>
-                                    <button class="bg-red-500 text-white px-4 py-1 text-sm rounded-md delete-btn"
-                                        data-event-id="<%= event._id %>">
-                                        Delete
-                                    </button>
-                                    <div onclick="data()" data-event-id="<%= URL %>/login/<%= event._id %>" id="share"
-                                        class="bg-gray-200 text-neutral-800 px-4 py-1 flex items-center justify-center text-sm rounded-md ">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                            viewBox="0 0 24 24">
-                                            <path fill="currentColor"
-                                                d="M8 13v-1h7v1zm7.5-6a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H13v-1h2.5c2.5 0 4.5-2 4.5-4.5S18 8 15.5 8H13V7zm-8 11A5.5 5.5 0 0 1 2 12.5A5.5 5.5 0 0 1 7.5 7H10v1H7.5C5 8 3 10 3 12.5S5 17 7.5 17H10v1z" />
-                                        </svg>
-                                        </a>
-                                    </div>
-                                </div>
+        <main class="overflow-auto rounded-xl border-2 border-gray-200 bg-gray-50 scroll-smooth">
+            <div class="snap-x snap-start snap-mandatory overflow-auto scroll-snap-type-y-mandatory flex-col gap-2">
+                <div class="flex-grow p-4">
+                    <div class="rounded-lg">
+                        <div class="text-2xl font-bold">
+                            Hallo, <%= info.username %>
+                        </div>
+                        <p class="mt-2 text-sm">
+                            Hier vind je jouw account gegevens.
+                        </p>
+                        <div class=" mt-4">
+                            <p>
+                                <span class="mb-2 block text-sm font-medium text-gray-700">id-nummer:</span>
+                            <div id="userid"
+                                class="w-full rounded-md border-gray-300 focus:border-gray-400 border px-3 py-2 outline-none">
+                                <%= info.userid %>
                             </div>
+                            </p>
+                            <button id="unregister"
+                                class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90 h-10 px-4 py-2 w-full mt-4 bg-red-600 text-white">
+                                Account verwijderen
+                            </button>
+
                         </div>
                     </div>
-                    <% }) %>
+                </div>
             </div>
         </main>
         <footer class=" bottom-5 sticky border-t-2 pt-2 border-gray-200">
             <div class="flex justify-evenly items-center">
-                <a href="/" class="flex opacity-50 hover:opacity-50 flex-col items-center justify-center">
+                <a href="/" class="flex opacity-30 hover:opacity-50 flex-col items-center justify-center">
                     <svg class=" w-10 h-10" xmlns="http://www.w3.org/2000/svg" width="32" height="32"
                         viewBox="0 0 24 24">
                         <path fill="currentColor"
@@ -81,8 +70,9 @@
                     </svg>
                     <p class="text-sm font-medium">Aanmaken</p>
                 </a>
-                <a href="/profiel" class="flex opacity-30 hover:opacity-50 flex-col items-center justify-center">
-                    <svg class=" w-10 h-10" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+                <a href="/profiel" class="flex opacity-50 hover:opacity-50 flex-col items-center justify-center">
+                    <svg class=" w-10 h-10" xmlns="http://www.w3.org/2000/svg" width="32" height="32"
+                        viewBox="0 0 24 24">
                         <path fill="currentColor"
                             d="M11.5 14c4.14 0 7.5 1.57 7.5 3.5V20H4v-2.5c0-1.93 3.36-3.5 7.5-3.5m6.5 3.5c0-1.38-2.91-2.5-6.5-2.5S5 16.12 5 17.5V19h13zM11.5 5A3.5 3.5 0 0 1 15 8.5a3.5 3.5 0 0 1-3.5 3.5A3.5 3.5 0 0 1 8 8.5A3.5 3.5 0 0 1 11.5 5m0 1A2.5 2.5 0 0 0 9 8.5a2.5 2.5 0 0 0 2.5 2.5A2.5 2.5 0 0 0 14 8.5A2.5 2.5 0 0 0 11.5 6" />
                     </svg>

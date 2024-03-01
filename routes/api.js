@@ -7,7 +7,7 @@ const archiver = require('archiver');
 
 const { useAuth, useUserCheck, useRegister } = require('../middleware/index');
 const { Users, ActiveUsers } = require('../middleware/sessions/index');
-const { Event } = require('../middleware/mongo/index');
+const { Event, User } = require('../middleware/mongo/index');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -51,6 +51,48 @@ router.post('/register', useRegister, (req, res, next) => {
   if (req.sessionId) res.cookie("Token", req.sessionId, { httpOnly: true, secure: false, sameSite: true, maxAge: 24 * 60 * 60 * 1000 });
   res.status(req.response.statusCode).json(req.response);
 
+});
+
+router.delete('/register', async (req, res, next) => {
+
+  const sessionId = req.cookies.Token;
+  const user = Users.get(sessionId);
+  if (!user) return res.status(401).json({ message: "Niet geautoriseerd" });
+
+  Users.delete(sessionId);
+  ActiveUsers.delete(user.username);
+  res.clearCookie("Token");
+
+  const events = await Event.find({ CreatedById: user.userid });
+
+  events.forEach(async event => {
+    const eventFolderPath = path.join(__dirname, '..', 'public', 'uploads', event.id);
+    const eventIconPath = path.join(__dirname, '..', 'public', event.image);
+
+    if (fs.existsSync(eventIconPath)) {
+      fs.unlinkSync(eventIconPath);
+    }
+
+    if (fs.existsSync(eventFolderPath)) {
+      fs.rmdirSync(eventFolderPath, { recursive: true });
+    }
+
+    await Event.findByIdAndDelete(event.id);
+  });
+
+  await User.findByIdAndDelete(user.userid).catch(() => {
+    return res.status(500).json({
+      statusCode: 500,
+      statusMessage: "Interne serverfout",
+      message: "Er is een onverwachte situatie opgetreden waardoor de server niet aan het verzoek kon voldoen."
+    });
+  });
+
+  res.status(200).json({
+    statusCode: 200,
+    statusMessage: "OK",
+    message: "Gebruiker succesvol verwijderd",
+  });
 });
 
 router.post('/upload/:id', useUserCheck({ "admin": false }), upload.array('photos', 15), (req, res, next) => {

@@ -1,9 +1,21 @@
 const express = require('express');
 const router = express.Router();
+const http = require('http');
+const cron = require('node-cron');
 
 const { fetchEvent, fetchUser, showevents } = require('../middleware/index');
 const { Event } = require('../middleware/mongo/index');
 const { Users, } = require('../middleware/sessions/index');
+
+cron.schedule('*/2 * * * *', async () => {
+  setTimeout(() => {
+    const req = http.request(process.env.ServerUrl);
+    req.on('error', (error) => {
+      console.error(error);
+    });
+    req.end();
+  }, 1000)
+});
 
 router.get('/', fetchUser, async (req, res, next) => {
 
@@ -28,6 +40,17 @@ router.get('/', fetchUser, async (req, res, next) => {
     title = event?.title
     res.render('./home/gebruiker', { username: username, eventid: eventid, title });
   }
+});
+
+router.get('/profiel', fetchUser, async (req, res, next) => {
+  const admin = req.response?.data?.admin;
+
+  if (req.response.statusCode != 200 || !admin) {
+    res.redirect('/login');
+    return;
+  }
+
+  res.render('./profiel', { info: req.response.data });
 });
 
 router.get('/register', fetchUser, (req, res, next) => {
@@ -73,6 +96,10 @@ router.get('/upload', fetchUser, async (req, res) => {
     res.render('./upload/foto', { username: username, eventid: eventid, title });
   }
 
+});
+
+router.get('/status', async (req, res, next) => {
+  res.status(200).json({ statusCode: 200, statusMessage: "OK", message: "Succes" });
 });
 
 
