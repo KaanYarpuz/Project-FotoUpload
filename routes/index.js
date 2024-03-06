@@ -1,17 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const http = require('http');
-const cron = require('node-cron');
 
 const { fetchEvent, fetchUser, showevents } = require('../middleware/index');
 const { Event } = require('../middleware/mongo/index');
 const { Users, } = require('../middleware/sessions/index');
-
-// cron.schedule('*/2 * * * *', async () => {
-//   const req = http.request(process.env.ServerUrl);
-//   req.on('error', (error) => console.error(error));
-//   req.end();
-// });
 
 router.get('/', fetchUser, async (req, res, next) => {
 
